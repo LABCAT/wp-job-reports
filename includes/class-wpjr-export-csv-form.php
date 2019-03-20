@@ -26,28 +26,85 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
         private $current_year = 2000;
 
         private $job_export_fields = [
-            'ID'                 => 'ID',
-            'post_title'         => 'Title',
-            'post_content'       => 'Description',
-            'post_author'        => 'Author',
-            'post_date'          => 'Date',
-            'post_status'        => 'Status',
-            '_Company'           => 'Company',
-            '_CompanyURL'        => 'Website',
-            '_how_to_apply'      => 'How To Apply',
-            'job_type'           => 'Job Type',
-            'job_cat'            => 'Job Category',
-            'job_salary'         => 'Job Salary',
-            'geo_address'        => 'Location',
-            '_jr_job_duration'   => 'Job Duration'
+            'ID'                 => [
+                                        'Title' => 'ID',
+                                        'Value' => 1
+                                    ],
+            'post_title'         => [
+                                        'Title' => 'Title',
+                                        'Value' => 1
+                                    ],
+            'post_content'       => [
+                                        'Title' => 'Description',
+                                        'Value' => 1
+                                    ],
+            'post_author'        => [
+                                        'Title' => 'Author',
+                                        'Value' => 1
+                                    ],
+            'post_date'          => [
+                                        'Title' => 'Date',
+                                        'Value' => 1
+                                    ],
+            'post_status'        => [
+                                        'Title' => 'Status',
+                                        'Value' => 1
+                                    ],
+            '_Company'           => [
+                                        'Title' => 'Company',
+                                        'Value' => 1
+                                    ],
+            '_CompanyURL'        => [
+                                        'Title' => 'Website',
+                                        'Value' => 1
+                                    ],
+            '_how_to_apply'      => [
+                                        'Title' => 'How To Apply',
+                                        'Value' => 1
+                                    ],
+            'job_type'           => [
+                                        'Title' => 'Job Type',
+                                        'Value' => 1
+                                    ],
+            'job_cat'            => [
+                                        'Title' => 'Job Category',
+                                        'Value' => 1
+                                    ],
+            'job_salary'         => [
+                                        'Title' => 'Job Salary',
+                                        'Value' => 1
+                                    ],
+            'geo_address'        => [
+                                        'Title' => 'Location',
+                                        'Value' => 1
+                                    ],
+            '_jr_job_duration'   => [
+                                        'Title' => 'Job Duration',
+                                        'Value' => 1
+                                    ],
         ];
 
         private $order_export_fields = [
-            'OrderID'            => 'Order ID',
-            'order_status'       => 'Order Status',
-            'order_description'  => 'Order Description',
-            'total_price'        => 'Order Total',
-            'gateway'            => 'Payment Gateway'
+            'OrderID'            => [
+                                        'Title' => 'Order ID',
+                                        'Value' => 1
+                                    ],
+            'order_status'       => [
+                                        'Title' => 'Order Status',
+                                        'Value' => 1
+                                    ],
+            'order_description'  => [
+                                        'Title' => 'Order Description',
+                                        'Value' => 1
+                                    ],
+            'total_price'        => [
+                                        'Title' => 'Order Total',
+                                        'Value' => 1
+                                    ],
+            'gateway'            => [
+                                        'Title' => 'Payment Gateway',
+                                        'Value' => 1
+                                    ]
         ];
 
         /**
@@ -64,6 +121,7 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
             $this->current_year = isset( $_POST[ 'job_report_year' ] ) ? intval( $_POST[ 'job_report_year' ] ) : date( 'Y' );
 
             if ( isset( $_POST[ 'wpjr_export_csv' ] ) ) {
+                $this->update_settings();
                 $this->download_csv();
             }
         }
@@ -71,7 +129,7 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
         /**
          * Registers the settings available
          */
-        public static function register_settings() {
+        public function register_settings() {
             register_setting( 'wpjr-settings', 'job_export_fields' );
             if( get_option( 'job_export_fields' ) === false ) {
                 update_option( 'job_export_fields', $this->job_export_fields, 'no' );
@@ -80,6 +138,35 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
             if( get_option( 'order_export_fields' ) === false ) {
                 update_option( 'order_export_fields', $this->order_export_fields, 'no' );
             }
+        }
+
+        public function update_settings(){
+            $current_job_export_fields = get_option( 'job_export_fields' );
+
+            foreach ( $current_job_export_fields as $key => $field ) {
+                if( isset( $_POST[ 'job_export_fields' ][ $key ] ) ){
+                    $current_job_export_fields[ $key ][ 'Value' ] = 1;
+                }
+                else {
+                    $current_job_export_fields[ $key ][ 'Value' ] = 0;
+                }
+            }
+
+            update_option( 'job_export_fields', $current_job_export_fields, 'no' );
+
+            $current_order_export_fields = get_option( 'order_export_fields' );
+
+            foreach ( $current_order_export_fields as $key => $field ) {
+                if( isset( $_POST[ 'order_export_fields' ][ $key ] ) ){
+                    $current_order_export_fields[ $key ][ 'Value' ] = 1;
+                }
+                else {
+                    $current_order_export_fields[ $key ][ 'Value' ] = 0;
+                }
+            }
+
+            update_option( 'order_export_fields', $current_order_export_fields, 'no' );
+
         }
 
         public function download_csv(){
@@ -98,12 +185,27 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
 
             $file = fopen( 'php://output', 'w' );
 
-            $export_fields = array_merge( $this->job_export_fields, $this->order_export_fields );
+            $export_fields = array_merge(
+                                $_POST[ 'job_export_fields' ],
+                                $_POST[ 'order_export_fields' ]
+                            );
+
+
+            $headings = [];
+            foreach ( array_keys( $export_fields ) as $key ) {
+                if( isset( $this->job_export_fields[$key] ) ){
+                    $headings[] = $this->job_export_fields[$key]['Title'];
+                }
+                else if( isset( $this->order_export_fields[$key] ) ){
+                    $headings[] = $this->order_export_fields[$key]['Title'];
+                }
+            }
+
 
             //populate CSV headings
             fputcsv(
                 $file,
-                array_values( $export_fields )
+                $headings
             );
 
             //get job data for particular month
@@ -199,9 +301,9 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
 
         public function add_settings_page_to_payments_submenu(){
             add_submenu_page(
-                'app-dashboard',
-                'Job Reports',
-                'Job Reports',
+                'edit.php?post_type=job_listing',
+                'Reports',
+                'Reports',
                 'manage_options',
                 'download_reports',
                 [ $this, 'output' ]
@@ -245,6 +347,39 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
                     }
                 ?>
             </select>
+            <?php
+        }
+
+        public function job_export_fields(){
+            $export_fields = get_option( 'job_export_fields' );
+            return $this->checkbox_set( $export_fields, 'job_export_fields' );
+        }
+
+        public function order_export_fields(){
+            $export_fields = get_option( 'order_export_fields' );
+            return $this->checkbox_set( $export_fields, 'order_export_fields' );
+        }
+
+        public function checkbox_set( $export_fields, $name ){
+            ?>
+            <div class="optionset checkboxset" role="listbox">
+                <?php
+                    foreach ( $export_fields as $key => $field ) {
+                        $state = 'value="0"';
+                        if( $field['Value'] ){
+                            $state = 'value="' . $field['Value'] . '" checked="checked"';
+                        }
+                        ?>
+                        <div>
+                            <label>
+                                <input name="<?php echo $name . '[' . $key . ']'; ?>" type="checkbox" <?php echo $state;?>/>
+                                <?php echo $field['Title']; ?>
+                            </label>
+                        </div>
+                        <?php
+                    }
+                ?>
+            </div>
             <?php
         }
 
