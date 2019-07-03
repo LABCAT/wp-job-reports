@@ -46,6 +46,10 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
                                         'Title' => 'Date',
                                         'Value' => 1
                                     ],
+            'post_name'          => [
+                                        'Title' => 'Slug',
+                                        'Value' => 1
+                                    ],
             'post_status'        => [
                                         'Title' => 'Status',
                                         'Value' => 1
@@ -351,12 +355,16 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
         }
 
         public function job_export_fields(){
-            $export_fields = get_option( 'job_export_fields' );
+            $default_fields = $this->job_export_fields;
+            $saved_fields = get_option( 'job_export_fields' );
+            $export_fields = array_merge( $default_fields, $saved_fields );
             return $this->checkbox_set( $export_fields, 'job_export_fields' );
         }
 
         public function order_export_fields(){
-            $export_fields = get_option( 'order_export_fields' );
+            $default_fields = $this->order_export_fields;
+            $saved_fields = get_option( 'order_export_fields' );
+            $export_fields = array_merge( $default_fields, $saved_fields );
             return $this->checkbox_set( $export_fields, 'order_export_fields' );
         }
 
