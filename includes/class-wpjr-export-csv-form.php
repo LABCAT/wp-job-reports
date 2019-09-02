@@ -42,11 +42,11 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
                                         'Title' => 'Author ID',
                                         'Value' => 1
                                     ],
-            'post_author_username'  => [
+            'user_login'            => [
                                         'Title' => 'Author Username',
                                         'Value' => 1
                                     ],
-            'post_author_email'     => [
+            'user_email'            => [
                                         'Title' => 'Author Email',
                                         'Value' => 1
                                     ],
@@ -241,19 +241,14 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
                 $meta_data = get_post_meta( $job->ID );
                 $term_data = $this->get_term_data( $job->ID );
                 $order_data = $this->get_order_data( $job->ID );
+                $user_data = get_userdata( $job->post_author );
 
                 foreach ( array_keys( $export_fields ) as $key ) {
                     if( isset( $job->$key ) ){
-                        $value = $job->$key;
-                        if( $key === 'post_author_username' ){
-                            $user_data = get_userdata( $job->post_author );
-                            $value = $user_data->user_login;
-                        }
-                        if( $key === 'post_author_email' ){
-                            $user_data = get_userdata( $job->post_author );
-                            $value = $user_data->user_email;
-                        }
-                        $job_data_array[] = $value;
+                        $job_data_array[] = $job->$key;
+                    }
+                    else if( isset( $user_data->$key ) ){
+                        $job_data_array[] = $user_data->$key;
                     }
                     else if( isset( $meta_data[ $key ] ) ){
                         $job_data_array[] = $meta_data[ $key ];
