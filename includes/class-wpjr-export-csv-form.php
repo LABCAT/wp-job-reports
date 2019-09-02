@@ -26,23 +26,31 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
         private $current_year = 2000;
 
         private $job_export_fields = [
-            'ID'                 => [
+            'ID'                    => [
                                         'Title' => 'ID',
                                         'Value' => 1
                                     ],
-            'post_title'         => [
+            'post_title'            => [
                                         'Title' => 'Title',
                                         'Value' => 1
                                     ],
-            'post_content'       => [
+            'post_content'          => [
                                         'Title' => 'Description',
                                         'Value' => 1
                                     ],
-            'post_author'        => [
-                                        'Title' => 'Author',
+            'post_author'           => [
+                                        'Title' => 'Author ID',
                                         'Value' => 1
                                     ],
-            'post_date'          => [
+            'post_author_username'  => [
+                                        'Title' => 'Author Username',
+                                        'Value' => 1
+                                    ],
+            'post_author_email'     => [
+                                        'Title' => 'Author Email',
+                                        'Value' => 1
+                                    ],
+            'post_date'             => [
                                         'Title' => 'Date',
                                         'Value' => 1
                                     ],
@@ -54,35 +62,35 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
                                         'Title' => 'Status',
                                         'Value' => 1
                                     ],
-            '_Company'           => [
+            '_Company'              => [
                                         'Title' => 'Company',
                                         'Value' => 1
                                     ],
-            '_CompanyURL'        => [
+            '_CompanyURL'           => [
                                         'Title' => 'Website',
                                         'Value' => 1
                                     ],
-            '_how_to_apply'      => [
+            '_how_to_apply'         => [
                                         'Title' => 'How To Apply',
                                         'Value' => 1
                                     ],
-            'job_type'           => [
+            'job_type'              => [
                                         'Title' => 'Job Type',
                                         'Value' => 1
                                     ],
-            'job_cat'            => [
+            'job_cat'               => [
                                         'Title' => 'Job Category',
                                         'Value' => 1
                                     ],
-            'job_salary'         => [
+            'job_salary'            => [
                                         'Title' => 'Job Salary',
                                         'Value' => 1
                                     ],
-            'geo_address'        => [
+            'geo_address'           => [
                                         'Title' => 'Location',
                                         'Value' => 1
                                     ],
-            '_jr_job_duration'   => [
+            '_jr_job_duration'      => [
                                         'Title' => 'Job Duration',
                                         'Value' => 1
                                     ],
@@ -237,8 +245,13 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
                 foreach ( array_keys( $export_fields ) as $key ) {
                     if( isset( $job->$key ) ){
                         $value = $job->$key;
-                        if( $key === 'post_author' ){
-                            $value = get_the_author_meta( 'display_name', $job->$key );
+                        if( $key === 'post_author_username' ){
+                            $user_data = get_userdata( $job->post_author );
+                            $value = $user_data->user_login;
+                        }
+                        if( $key === 'post_author_email' ){
+                            $user_data = get_userdata( $job->post_author );
+                            $value = $user_data->user_email;
                         }
                         $job_data_array[] = $value;
                     }
