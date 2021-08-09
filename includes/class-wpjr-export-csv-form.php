@@ -125,7 +125,7 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
         public function __construct() {
             add_action( 'init', [ $this, 'init' ], 999 );
             add_action( 'admin_init', [ $this, 'register_settings' ] );
-            add_action( 'admin_menu', [ $this, 'add_settings_page_to_payments_submenu' ], 999 );
+            add_action( 'admin_menu', [ $this, 'add_settings_page_to_jobs_submenu' ], 999 );
         }
 
         public function init(){
@@ -188,7 +188,7 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
 
             $domain = explode( ".", parse_url( site_url(), PHP_URL_HOST ) );
             $domain = reset( $domain );
-            $filename = 'wp-job-report-'.  $domain . '-' . strtolower( $this->month_name( $this->current_month ) ) . '-' .  $this->current_year . '.csv';
+            $filename = 'wp-monthly-jobs-report-'.  $domain . '-' . strtolower( $this->month_name( $this->current_month ) ) . '-' .  $this->current_year . '.csv';
 
             header( 'Content-type: text/csv' );
             header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
@@ -311,13 +311,13 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
             return $order_data;
         }
 
-        public function add_settings_page_to_payments_submenu(){
+        public function add_settings_page_to_jobs_submenu(){
             add_submenu_page(
                 'edit.php?post_type=job_listing',
-                'Reports',
-                'Reports',
+                'Monthly Reports',
+                'Monthly Reports',
                 'manage_options',
-                'download_reports',
+                'monthly_job_reports',
                 [ $this, 'output' ]
             );
         }

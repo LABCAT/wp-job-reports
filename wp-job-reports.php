@@ -83,6 +83,7 @@ class WP_Job_Reports {
 	{
 		if ( is_admin() ) {
 			include_once( JOB_REPORTS_PLUGIN_DIR . '/includes/class-wpjr-export-csv-form.php' );
+			include_once( JOB_REPORTS_PLUGIN_DIR . '/includes/class-wpjr-job-views-export-csv-form.php' );
 		}
 	}
 

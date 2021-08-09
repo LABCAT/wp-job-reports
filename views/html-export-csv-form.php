@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <div id="dashboard-widgets" class="wrap columns-2">
     <form method="post" id="mainform" action="" enctype="multipart/form-data">
-        <h2> Download Monthly Reports</h2>
+        <h2>Download Monthly Reports</h2>
         <div class="postbox-container">
             <table class="form-table">
                 <tbody>
