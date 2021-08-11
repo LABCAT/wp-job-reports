@@ -72,6 +72,7 @@ if ( ! class_exists( 'WPJR_Job_Views_Export_CSV_Form', false ) ) {
                 INNER JOIN ' . $wpdb->prefix . 'posts AS posts
                 ON jr_counter_total.postnum = posts.ID
                 WHERE jr_counter_total.postnum = posts.ID
+                AND posts.post_type = "job_listing"
                 ORDER BY posts.ID DESC'
             );
             
