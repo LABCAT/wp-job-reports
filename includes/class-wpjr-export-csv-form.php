@@ -305,8 +305,8 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
                 $order_data[ 'order_status' ] = $order->post_status;
                 $order_data[ 'order_description' ] = $order->post_title;
                 //get first element in array
-                $order_data[ 'total_price' ] = reset( $order_meta[ 'total_price' ] );
-                $order_data[ 'gateway' ] = reset( $order_meta[ 'gateway' ] );
+                $order_data[ 'total_price' ] = isset($order_meta[ 'total_price' ]) && is_array($order_meta[ 'total_price' ]) ? reset( $order_meta[ 'total_price' ] ) : '';
+                $order_data[ 'gateway' ] = isset($order_meta[ 'gateway' ]) && is_array($order_meta[ 'gateway' ]) ? reset( $order_meta[ 'gateway' ] ) : '';
             }
             return $order_data;
         }

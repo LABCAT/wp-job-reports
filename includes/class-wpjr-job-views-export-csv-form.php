@@ -44,17 +44,17 @@ if ( ! class_exists( 'WPJR_Job_Views_Export_CSV_Form', false ) ) {
             $domain = reset( $domain );
             $filename = 'wp-job-views-report-'.  $domain . '.csv';
 
-            // header( 'Content-type: text/csv' );
-            // header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
-            // header( 'Pragma: no-cache' );
-            // header( 'Expires: 0' );
+            header( 'Content-type: text/csv' );
+            header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+            header( 'Pragma: no-cache' );
+            header( 'Expires: 0' );
 
             $file = fopen( 'php://output', 'w' );
 
 
             $headings = [
-                'job_title',
                 'job_id',
+                'job_title',
                 'number_of_views'
             ];
 
@@ -66,23 +66,22 @@ if ( ! class_exists( 'WPJR_Job_Views_Export_CSV_Form', false ) ) {
             );
 
             global $wpdb;
-            $sql = $wpdb->prepare( 
-                'SELECT posts.ID, posts.post_title, jr_counter_total.postcount 
+            $jobs = $wpdb->get_results(
+                 'SELECT posts.ID, posts.post_title, jr_counter_total.postcount 
                 FROM ' . $wpdb->prefix .'jr_counter_total AS jr_counter_total
                 INNER JOIN ' . $wpdb->prefix . 'posts AS posts
-                ON jr_counter_total.postnum = posts.ID'
+                ON jr_counter_total.postnum = posts.ID
+                WHERE jr_counter_total.postnum = posts.ID
+                ORDER BY posts.ID DESC'
             );
-
-            $results = $wpdb->get_results($sql);
-
-            // echo '<pre>';
-            // print_r(count($results));
-            // echo '</pre>';
-            // die('sdfsdf');
+            
             
             //populate CSV with a row for each job
             foreach ( $jobs as $job ) {
-
+                $job_data_array = [];
+                $job_data_array[] = $job->ID;
+                $job_data_array[] = $job->post_title;
+                $job_data_array[] = $job->postcount;
                 fputcsv(
                    $file,
                    $job_data_array
