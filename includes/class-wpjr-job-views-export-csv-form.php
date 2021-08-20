@@ -55,6 +55,9 @@ if ( ! class_exists( 'WPJR_Job_Views_Export_CSV_Form', false ) ) {
             $headings = [
                 'job_id',
                 'job_title',
+                'publish_date',
+                'expire_date',
+                'url',
                 'number_of_views'
             ];
 
@@ -67,21 +70,25 @@ if ( ! class_exists( 'WPJR_Job_Views_Export_CSV_Form', false ) ) {
 
             global $wpdb;
             $jobs = $wpdb->get_results(
-                 'SELECT posts.ID, posts.post_title, jr_counter_total.postcount 
-                FROM ' . $wpdb->prefix .'jr_counter_total AS jr_counter_total
-                INNER JOIN ' . $wpdb->prefix . 'posts AS posts
+                 'SELECT posts.ID, posts.post_title, posts.post_date, posts.guid, jr_counter_total.postcount 
+                FROM ' . $wpdb->prefix . 'posts AS posts
+                LEFT JOIN ' . $wpdb->prefix . 'jr_counter_total AS jr_counter_total
                 ON jr_counter_total.postnum = posts.ID
-                WHERE jr_counter_total.postnum = posts.ID
-                AND posts.post_type = "job_listing"
+                WHERE posts.post_type = "job_listing"
+                AND posts.post_status = "publish"
                 ORDER BY posts.ID DESC'
             );
             
             
             //populate CSV with a row for each job
             foreach ( $jobs as $job ) {
+                $duration = get_post_meta( $job->ID, JR_JOB_DURATION_META, true );
                 $job_data_array = [];
                 $job_data_array[] = $job->ID;
                 $job_data_array[] = $job->post_title;
+                $job_data_array[] = appthemes_display_date(strtotime($job->post_date));
+                $job_data_array[] = jr_get_expiration_date( $job->post_date, $duration );
+                $job_data_array[] = htmlspecialchars_decode($job->guid);
                 $job_data_array[] = $job->postcount;
                 fputcsv(
                    $file,
