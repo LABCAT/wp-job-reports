@@ -83,7 +83,11 @@ if ( ! class_exists( 'WPJR_Export_CSV_Form', false ) ) {
                                         'Value' => 1
                                     ],
             'job_salary'            => [
-                                        'Title' => 'Job Salary',
+                                        'Title' => 'Job Salary (taxonomy)',
+                                        'Value' => 1
+                                    ],
+            'displayed_salary'      => [
+                                        'Title' => 'Salary/Compensation',
                                         'Value' => 1
                                     ],
             'geo_address'           => [
